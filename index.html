@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PS4 WebKit</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            background-image: url('BG.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            overflow: hidden;
+            background-color: #121212;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: sans-serif;
+        }
+        #result {
+            background: rgba(0,0,0,0.7);
+            padding: 20px 30px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="result"></div>
+
+    <script>
+        function processDevice() {
+            const userAgent = navigator.userAgent;
+            const isPS4 = /PlayStation 4|PS4/i.test(userAgent);
+            const resultDiv = document.getElementById("result");
+
+            function showError(msg) {
+                resultDiv.style.display = "block";
+                resultDiv.innerHTML = msg;
+            }
+
+            if (isPS4) {
+                const fwMatch = userAgent.match(/(?:PlayStation 4|PS4)[\s\/]+([\d\.]+)/i);
+
+                if (fwMatch && fwMatch[1]) {
+                    const firmware = parseFloat(fwMatch[1]);
+                    let url = "";
+
+                    if (firmware >= 5.00 && firmware <= 6.72) {
+                        url = "https://thiagobarrios.github.io/505-672/index.html";
+                    } else if (firmware >= 7.00 && firmware <= 9.60) {
+                        url = "https://thiagobarrios.github.io/700-960/index.html";
+                    } else if (firmware >= 10.00 && firmware <= 11.02) {
+                        url = "https://thiagobarrios.github.io/1000-1102/index.html";
+                    } else if (firmware >= 11.50 && firmware <= 13.00) {
+                        url = "https://thiagobarrios.github.io/1150-1300/index.html";
+                    } else {
+                        
+                        showError(`Firmware ${fwMatch[1]} não suportado.<br>User-Agent: ${userAgent}`); // PS4 com firmware não mapeado
+                        return;
+                    }
+
+                    setTimeout(() => {
+                        window.location.href = url;
+                    }, 1500);
+
+                } else {
+                    
+                    showError(`Não foi possível identificar o firmware.<br>User-Agent: ${userAgent}`);
+                }
+            } else {
+                
+                showError(`Dispositivo não é um PS4.<br>Acesso negado.<br><br><small>${userAgent}</small>`); // Não é PS4
+                // window.location.href = "https://google.com";
+            }
+        }
+
+        window.onload = processDevice;
+    </script>
+
+</body>
+</html>
